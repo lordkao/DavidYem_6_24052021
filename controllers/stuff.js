@@ -1,8 +1,9 @@
 const Thing = require('../models/thing')
+const Like = require('../models/like')
 const fs =require('fs')
 
 exports.createThing = (req,res,next) => {/*Création de sauce.*/
-    const thingObject = JSON.parse(req.body.thing)
+    const thingObject = JSON.parse(req.body.sauce)
     delete thingObject._id
     const thing = new Thing({/*Créer une nouvelle instance de notre modèle Thing en enregistrant les élements du corps de la requête.*/
         ...thingObject,
@@ -22,11 +23,17 @@ exports.getOneThing = (req,res,next) => { /*Obtenir une sauce par son id.*/
 exports.modifyThing = (req,res,next) => {/*Modification d'une sauce.*/
     const thingObject = req.file ?
     {
-        ...JSON.parse(req.body.thing),
+        ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     }:{ ...req.body }
     Thing.updateOne({ _id: req.params.id},{...thingObject, _id: req.params.id})
     .then( () => res.status(200).json({ message: 'Objet modifié !'}))
+    .catch( error => res.status(400).json({ error }))
+}
+
+exports.like = (req,res,next) => {
+    Like.save()
+    .then()
     .catch( error => res.status(400).json({ error }))
 }
 
