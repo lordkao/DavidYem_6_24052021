@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 exports.signup = (req,res,next) => {/*Création d'un nouvel utilisateur.*/
     bcrypt.hash(req.body.password,10)
