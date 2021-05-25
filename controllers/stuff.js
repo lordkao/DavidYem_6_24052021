@@ -26,9 +26,26 @@ exports.modifyThing = (req,res,next) => {/*Modification d'une sauce.*/
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     }:{ ...req.body }
-    Thing.updateOne({ _id: req.params.id},{...thingObject, _id: req.params.id})
-    .then( () => res.status(200).json({ message: 'Objet modifié !'}))
-    .catch( error => res.status(400).json({ error }))
+
+    function updateOne(){
+        Thing.updateOne({ _id: req.params.id},{...thingObject, _id: req.params.id})
+            .then( () => res.status(200).json({ message: 'Objet modifié !'}))
+            .catch( error => res.status(400).json({ error }))
+    }
+
+    if (req.file){
+        Thing.findOne({ _id: req.params.id})
+        .then( thing => {
+            const filename = thing.imageUrl.split('/images/')[1]
+            fs.unlink(`images/${filename}`,() => {
+                updateOne()
+            })
+        })
+        .catch( error => res.status(500).json({ error }))
+    }
+    else{
+        updateOne()
+    }
 }
 
 exports.like = (req,res,next) => {
