@@ -62,6 +62,12 @@ exports.like = (req,res,next) => {
         const usersLiked = thing.usersLiked
         const usersDisliked = thing.usersDisliked
 
+        function updateLike(value1){
+            Thing.updateOne({ _id: reqParams},{ ...value1, _id: reqParams})
+            .then(() => res.status(200).json({ message: 'like mis à jour'}))
+            .catch( error => res.status(500).json({ error }))
+        }
+        
         if(userlike == 1){
             usersLiked.push(userId)
             const resumeLike = {
@@ -70,9 +76,7 @@ exports.like = (req,res,next) => {
             }
             console.log(usersLiked.length)
             console.log("[ " + usersLiked + " ] ==> tableau des Ids j'aime et il y a : " + usersLiked.length + " users ")
-            Thing.updateOne({ _id: reqParams},{ ...resumeLike, _id: reqParams})
-            .then(() => res.status(200).json({ message: 'like bien enregistré'}))
-            .catch( error => res.status(500).json({ error }))
+            updateLike(resumeLike)
         }
         else if(userlike == -1){
             usersDisliked.push(userId)
@@ -81,9 +85,7 @@ exports.like = (req,res,next) => {
                 usersDisliked: usersDisliked
             }
             console.log("[ " + usersDisliked + " ] ==> tableau des Ids j'aime pas et il y a : " + usersDisliked.length + " users ")
-            Thing.updateOne({ _id: reqParams},{ ...resumeLike, _id: reqParams})
-            .then(() => res.status(200).json({ message: 'dislike bien enregistré'}))
-            .catch( error => res.status(500).json({ error }))
+            updateLike(resumeLike)
         }
         else if(userlike == 0){
 
@@ -99,12 +101,8 @@ exports.like = (req,res,next) => {
                     likes: usersLiked.length,
                     usersLiked: usersLiked
                 }
-                Thing.updateOne({ _id: reqParams},{ ...resumeLike, _id: reqParams})
-                .then(() =>{
-                    console.log("[ " + usersLiked + " ] ==> mis à jour du tableau des j'aimes et il y a : " + usersLiked.length + " users ")
-                    res.status(200).json({ message: 'Like supprimé des tableaux'})
-                })
-                .catch( error => res.status(500).json({ error }))
+                console.log("[ " + usersLiked + " ] ==> tableau des Ids j'aime et il y a : " + usersLiked.length + " users ")
+                updateLike(resumeLike)
                 }
 
             else if(findUserIdDisliked){
@@ -114,12 +112,8 @@ exports.like = (req,res,next) => {
                     dislikes: usersDisliked.length, 
                     usersDisliked: usersDisliked
                 }
-                Thing.updateOne({ _id: reqParams},{ ...resumeLike, _id: reqParams})
-                .then(() => {   
-                    console.log("[ " + usersDisliked + " ] ==> mis à jour du tableau des j'aimes pas et il y a : " + usersDisliked.length + " users ")
-                    res.status(200).json({ message: 'Like supprimé des tableaux'})
-                })
-                .catch( error => res.status(500).json({ error }))
+                console.log("[ " + usersDisliked + " ] ==> tableau des Ids j'aime pas et il y a : " + usersDisliked.length + " users ")
+                updateLike(resumeLike)
                 }
         }
     })
