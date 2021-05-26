@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const sauceSchema = mongoose.Schema({
-    userId: { type: String, required: true},
+    userId: { type: String, required: true},        /*ID utilisateur.*/
     name : { type: String, required : true},        /*Nom de la sauce.*/
     manufacturer : { type: String, required: true},     /*Fabricant de la sauce.*/
     description : { type: String, required: true},      /*Description de la sauce.*/
@@ -10,8 +10,8 @@ const sauceSchema = mongoose.Schema({
     heat : { type: Number, required: true},     /*Nombre entre 1 et 10 décrivant la sauce.*/
     likes : { type: Number},        /*Nombre de users qui aiment la sauce.*/
     dislikes : { type: Number},     /*Nombre de users qui n'aiment pas la sauce.*/
-    usersLiked: [{type: String}],       /*Tableau d'IDs des users qui ont aimé la sauce.*/
-    usersDisliked: [{type: String}]     /*Tableau d'IDs des users qui n'ont pas aimé la sauce.*/
+    usersLiked: [String],       /*Tableau d'IDs des users qui ont aimé la sauce.*/
+    usersDisliked: [String]     /*Tableau d'IDs des users qui n'ont pas aimé la sauce.*/
 })
 
 module.exports = mongoose.model('Thing',sauceSchema)
