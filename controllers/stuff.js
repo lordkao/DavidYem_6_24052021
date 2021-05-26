@@ -52,7 +52,7 @@ exports.modifyThing = (req,res,next) => {/*Modification d'une sauce.*/
     }
 }
 
-exports.like = (req,res,next) => {
+exports.like = (req,res,next) => {/*Gestion des likes de l'utilisateur.*/
     const userlike = req.body.like
     const userId = req.body.userId
     const reqParams = req.params.id
@@ -68,14 +68,6 @@ exports.like = (req,res,next) => {
         function deleteUserId(array,thingFound){
             const indexUserId = array.indexOf(thingFound)
             array.splice(indexUserId,1)
-        }
-        const resumeLike = {
-            usersLiked: usersLiked,
-            likes: usersLiked.length
-        }
-        const resumeDislike = {
-            dislikes: usersDisliked.length, 
-            usersDisliked: usersDisliked
         }
         if(userlike == 1){
             usersLiked.push(userId)
@@ -93,6 +85,7 @@ exports.like = (req,res,next) => {
                 dislikes: usersDisliked.length, 
                 usersDisliked: usersDisliked
             }
+            console.log(resumeDislike)
             console.log("[ " + usersDisliked + " ] ==> tableau des Ids j'aime pas et il y a : " + usersDisliked.length + " users ")
             updateLike(resumeDislike)
         }
@@ -115,6 +108,7 @@ exports.like = (req,res,next) => {
                     dislikes: usersDisliked.length, 
                     usersDisliked: usersDisliked
                 }
+                console.log(resumeDislike)
                 console.log("[ " + usersDisliked + " ] ==> tableau des Ids j'aime pas et il y a : " + usersDisliked.length + " users ")
                 updateLike(resumeDislike)
                 }
