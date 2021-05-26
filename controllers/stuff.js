@@ -56,64 +56,67 @@ exports.like = (req,res,next) => {
     const userlike = req.body.like
     const userId = req.body.userId
     const reqParams = req.params.id
-    
     Thing.findOne({ _id: reqParams})
     .then( thing => {
         const usersLiked = thing.usersLiked
         const usersDisliked = thing.usersDisliked
-
         function updateLike(value1){
             Thing.updateOne({ _id: reqParams},{ ...value1, _id: reqParams})
             .then(() => res.status(200).json({ message: 'like mis à jour'}))
             .catch( error => res.status(500).json({ error }))
         }
-        
+        function deleteUserId(array,thingFound){
+            const indexUserId = array.indexOf(thingFound)
+            array.splice(indexUserId,1)
+        }
+        const resumeLike = {
+            usersLiked: usersLiked,
+            likes: usersLiked.length
+        }
+        const resumeDislike = {
+            dislikes: usersDisliked.length, 
+            usersDisliked: usersDisliked
+        }
         if(userlike == 1){
             usersLiked.push(userId)
             const resumeLike = {
-                likes: usersLiked.length,
-                usersLiked: usersLiked
+                usersLiked: usersLiked,
+                likes: usersLiked.length
             }
-            console.log(usersLiked.length)
+            console.log(resumeLike)
             console.log("[ " + usersLiked + " ] ==> tableau des Ids j'aime et il y a : " + usersLiked.length + " users ")
             updateLike(resumeLike)
         }
         else if(userlike == -1){
             usersDisliked.push(userId)
-            const resumeLike = {
+            const resumeDislike = {
                 dislikes: usersDisliked.length, 
                 usersDisliked: usersDisliked
             }
             console.log("[ " + usersDisliked + " ] ==> tableau des Ids j'aime pas et il y a : " + usersDisliked.length + " users ")
-            updateLike(resumeLike)
+            updateLike(resumeDislike)
         }
         else if(userlike == 0){
-
             const findUserIdLiked = usersLiked.find(elt => elt == userId)
             const findUserIdDisliked = usersDisliked.find(elt => elt == userId)
-           /* console.log("[ "+usersLiked + " ] ==> tableau des Ids j'aime et il y a : "+usersLiked.length+ " users ")
-            console.log("[ "+usersDisliked + " ] ==> tableau des Ids j'aime pas et il y a : "+usersDisliked.length+" users ")*/
-
             if(findUserIdLiked){
-                const indexUserIdLiked = usersLiked.indexOf(findUserIdLiked)
-                usersLiked.splice(indexUserIdLiked,1)
+                deleteUserId(usersLiked,findUserIdLiked)
                 const resumeLike = {
-                    likes: usersLiked.length,
-                    usersLiked: usersLiked
+                    usersLiked: usersLiked,
+                    likes: usersLiked.length
                 }
+                console.log(resumeLike)
                 console.log("[ " + usersLiked + " ] ==> tableau des Ids j'aime et il y a : " + usersLiked.length + " users ")
                 updateLike(resumeLike)
                 }
-
             else if(findUserIdDisliked){
-                const indexUserIdDisliked = usersDisliked.indexOf(findUserIdDisliked)
-                usersDisliked.splice(indexUserIdDisliked,1)
-                const resumeLike = {
+                deleteUserId(usersDisliked,findUserIdDisliked)
+                const resumeDislike = {
                     dislikes: usersDisliked.length, 
                     usersDisliked: usersDisliked
                 }
                 console.log("[ " + usersDisliked + " ] ==> tableau des Ids j'aime pas et il y a : " + usersDisliked.length + " users ")
-                updateLike(resumeLike)
+                updateLike(resumeDislike)
                 }
         }
     })
