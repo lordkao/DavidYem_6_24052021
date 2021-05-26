@@ -66,12 +66,10 @@ exports.like = (req,res,next) => {
             usersLiked.push(userId)
             const resumeLike = {
                 likes: usersLiked.length,
-                dislikes: usersDisliked.length, 
-                usersLiked: usersLiked,
-                usersDisliked: usersDisliked
+                usersLiked: usersLiked
             }
             console.log(usersLiked.length)
-            console.log("[ "+usersLiked + " ] ==> tableau des Ids j'aime")
+            console.log("[ " + usersLiked + " ] ==> tableau des Ids j'aime et il y a : " + usersLiked.length + " users ")
             Thing.updateOne({ _id: reqParams},{ ...resumeLike, _id: reqParams})
             .then(() => res.status(200).json({ message: 'like bien enregistré'}))
             .catch( error => res.status(500).json({ error }))
@@ -79,12 +77,10 @@ exports.like = (req,res,next) => {
         else if(userlike == -1){
             usersDisliked.push(userId)
             const resumeLike = {
-                likes: usersLiked.length,
                 dislikes: usersDisliked.length, 
-                usersLiked: usersLiked,
                 usersDisliked: usersDisliked
             }
-            console.log("[ "+usersDisliked + " ] ==> tableau des Ids j'aime pas")
+            console.log("[ " + usersDisliked + " ] ==> tableau des Ids j'aime pas et il y a : " + usersDisliked.length + " users ")
             Thing.updateOne({ _id: reqParams},{ ...resumeLike, _id: reqParams})
             .then(() => res.status(200).json({ message: 'dislike bien enregistré'}))
             .catch( error => res.status(500).json({ error }))
@@ -93,22 +89,19 @@ exports.like = (req,res,next) => {
 
             const findUserIdLiked = usersLiked.find(elt => elt == userId)
             const findUserIdDisliked = usersDisliked.find(elt => elt == userId)
-            console.log("[ "+findUserIdLiked + " ] ==> user dans le tableau j'aime")
-            console.log("[ "+usersLiked + " ] ==> tableau des Ids j'aime")
-            console.log("[ "+usersDisliked + " ] ==> tableau des Ids j'aime pas")
+           /* console.log("[ "+usersLiked + " ] ==> tableau des Ids j'aime et il y a : "+usersLiked.length+ " users ")
+            console.log("[ "+usersDisliked + " ] ==> tableau des Ids j'aime pas et il y a : "+usersDisliked.length+" users ")*/
 
             if(findUserIdLiked){
                 const indexUserIdLiked = usersLiked.indexOf(findUserIdLiked)
                 usersLiked.splice(indexUserIdLiked,1)
                 const resumeLike = {
                     likes: usersLiked.length,
-                    dislikes: usersDisliked.length, 
-                    usersLiked: usersLiked,
-                    usersDisliked: usersDisliked
+                    usersLiked: usersLiked
                 }
                 Thing.updateOne({ _id: reqParams},{ ...resumeLike, _id: reqParams})
                 .then(() =>{
-                    console.log("[ "+usersLiked+" ] ==> mis à jour du tableau des j'aimes")
+                    console.log("[ " + usersLiked + " ] ==> mis à jour du tableau des j'aimes et il y a : " + usersLiked.length + " users ")
                     res.status(200).json({ message: 'Like supprimé des tableaux'})
                 })
                 .catch( error => res.status(500).json({ error }))
@@ -118,14 +111,12 @@ exports.like = (req,res,next) => {
                 const indexUserIdDisliked = usersDisliked.indexOf(findUserIdDisliked)
                 usersDisliked.splice(indexUserIdDisliked,1)
                 const resumeLike = {
-                    likes: usersLiked.length,
                     dislikes: usersDisliked.length, 
-                    usersLiked: usersLiked,
                     usersDisliked: usersDisliked
                 }
                 Thing.updateOne({ _id: reqParams},{ ...resumeLike, _id: reqParams})
                 .then(() => {   
-                    console.log("[ "+usersDisliked+" ] ==> mis à jour du tableau des j'aimes pas")
+                    console.log("[ " + usersDisliked + " ] ==> mis à jour du tableau des j'aimes pas et il y a : " + usersDisliked.length + " users ")
                     res.status(200).json({ message: 'Like supprimé des tableaux'})
                 })
                 .catch( error => res.status(500).json({ error }))
