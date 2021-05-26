@@ -125,9 +125,7 @@ exports.like = (req,res,next) => {
     })
     .catch( error => res.status(500).json({ error }))
 }
-
-                       
-
+   
 exports.deleteThing = (req,res,next) => {/*Suppression de sauce.*/
     Thing.findOne({ _id: req.params.id})
     .then( thing => {
