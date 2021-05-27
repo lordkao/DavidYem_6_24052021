@@ -1,5 +1,4 @@
 const Thing = require('../models/thing')
-const Like = require('../models/like')
 const fs =require('fs')
 
 exports.createThing = (req,res,next) => {/*Création de sauce.*/
