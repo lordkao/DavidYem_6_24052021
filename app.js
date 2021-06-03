@@ -1,4 +1,7 @@
 const express = require('express')
+require('dotenv').config()
+const mongoUser = process.env.MONGO_USER
+const mongoPass = process.env.MONGO_PASSWORD
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const stuffRoutes = require('./routes/stuff')
@@ -8,7 +11,7 @@ const path = require('path')
 const app = express()
 
 /*Connection de l'api avec mongoDB.*/
-mongoose.connect('mongodb+srv://Lordkao:DatabasemongoDB@serveur-test.zd6sr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+mongoose.connect(`mongodb+srv://${mongoUser}:${mongoPass}@serveur-test.zd6sr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
