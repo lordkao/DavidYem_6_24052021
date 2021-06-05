@@ -6,12 +6,12 @@ require('dotenv').config()
 const tokenLogin = process.env.TOKEN_LOGIN
 const regexEmail = (mail) => /^([\w.-]+)[@]{1}([\w]+)[.]{1}([a-z]){2,5}$/.test(mail)
 const regexPassword= (password) => /([^a-zA-Z0-9@]+)/.test(password)
+const key = cryptoJs.enc.Hex.parse(process.env.KEY_CRYPTOJS)
+const iv = cryptoJs.enc.Hex.parse(process.env.IV_CRYPTOJS)
 
 function crypt(mail){
-    const key = cryptoJs.enc.Hex.parse(process.env.KEY_CRYPTOJS)
-    const iv = cryptoJs.enc.Hex.parse(process.env.IV_CRYPTOJS)
     const cryptMail = cryptoJs.AES.encrypt(mail,key,{ iv:iv }).toString()
-    console.log(cryptMail)
+    console.log(`mail crypté : ${cryptMail}`)
     return cryptMail
 }
 
@@ -26,11 +26,11 @@ exports.signup = (req,res,next) => {/*Création d'un nouvel utilisateur.*/
         res.status(400).json({ message:'Veuillez renseigner un password valide.(les caractères spéciaux ne sont pas autorisés)'})
     }
     else{
-        const mailCrypted = crypt(reqMail)
+        const mailToSave = crypt(reqMail)
         bcrypt.hash(reqPassword,10)
         .then( hash => {
             const user = new User({
-                email: mailCrypted,
+                email: mailToSave,
                 password: hash
             })
             user.save()
@@ -52,13 +52,19 @@ exports.login = (req,res,next) => {/*Connexion utilisateur.*/
         res.status(400).json({ message:'Veuillez renseigner un password valide.(les caractères spéciaux ne sont pas autorisés)'})
     }    
     else{
-        const mailCrypted = crypt(reqMail)
-        User.findOne({ email: mailCrypted})
+        const mailToMatch = crypt(reqMail)
+        
+        /*Test pour la récuperation de l'email*/
+        const decryptedMail = cryptoJs.AES.decrypt(mailToMatch,key,{ iv:iv })
+        const originalMail = decryptedMail.toString(cryptoJs.enc.Utf8)
+        console.log(`mail d'origine: ${originalMail}`)
+
+        User.findOne({ email: mailToMatch})
         .then( user => {
             if(!user){
                 return res.status(400).json({ error:'Utilisateur non trouvé !' })
             }
-            bcrypt.compare(req.body.password,user.password)
+            bcrypt.compare(reqPassword,user.password)
             .then( valid => {
                 if(!valid){
                     return res.status(401).json({ error : 'mot de passe incorrect !'})
