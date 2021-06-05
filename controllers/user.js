@@ -10,9 +10,8 @@ const key = cryptoJs.enc.Hex.parse(process.env.KEY_CRYPTOJS)
 const iv = cryptoJs.enc.Hex.parse(process.env.IV_CRYPTOJS)
 
 function crypt(mail){
-    
     const cryptMail = cryptoJs.AES.encrypt(mail,key,{ iv:iv }).toString()
-    console.log(cryptMail)
+    console.log(`mail crypté : ${cryptMail}`)
     return cryptMail
 }
 
@@ -54,12 +53,18 @@ exports.login = (req,res,next) => {/*Connexion utilisateur.*/
     }    
     else{
         const mailToMatch = crypt(reqMail)
+        
+        /*Test pour la récuperation de l'email*/
+        const decryptedMail = cryptoJs.AES.decrypt(mailToMatch,key,{ iv:iv })
+        const originalMail = decryptedMail.toString(cryptoJs.enc.Utf8)
+        console.log(`mail d'origine: ${originalMail}`)
+
         User.findOne({ email: mailToMatch})
         .then( user => {
             if(!user){
                 return res.status(400).json({ error:'Utilisateur non trouvé !' })
             }
-            bcrypt.compare(req.body.password,user.password)
+            bcrypt.compare(reqPassword,user.password)
             .then( valid => {
                 if(!valid){
                     return res.status(401).json({ error : 'mot de passe incorrect !'})
