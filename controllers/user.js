@@ -6,10 +6,11 @@ require('dotenv').config()
 const tokenLogin = process.env.TOKEN_LOGIN
 const regexEmail = (mail) => /^([\w.-]+)[@]{1}([\w]+)[.]{1}([a-z]){2,5}$/.test(mail)
 const regexPassword= (password) => /([^a-zA-Z0-9@]+)/.test(password)
+const key = cryptoJs.enc.Hex.parse(process.env.KEY_CRYPTOJS)
+const iv = cryptoJs.enc.Hex.parse(process.env.IV_CRYPTOJS)
 
 function crypt(mail){
-    const key = cryptoJs.enc.Hex.parse(process.env.KEY_CRYPTOJS)
-    const iv = cryptoJs.enc.Hex.parse(process.env.IV_CRYPTOJS)
+    
     const cryptMail = cryptoJs.AES.encrypt(mail,key,{ iv:iv }).toString()
     console.log(cryptMail)
     return cryptMail
