@@ -14,7 +14,7 @@ const sauceSchema = mongoose.Schema({
     usersDisliked: [String]     /*Tableau d'IDs des users qui n'ont pas aimé la sauce.*/
 })
 
-module.exports = mongoose.model('Thing',sauceSchema)
+module.exports = mongoose.model('Sauce',sauceSchema)
 
 /*{
     "name" : "samurai",

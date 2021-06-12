@@ -1,45 +1,45 @@
-const Thing = require('../models/thing')
+const Sauce = require('../models/sauce')
 const fs =require('fs')
 
-exports.createThing = (req,res,next) => {/*Création de sauce.*/
-    const thingObject = JSON.parse(req.body.sauce)
-    delete thingObject._id
-    const thing = new Thing({/*Créer une nouvelle instance de notre modèle Thing en enregistrant les élements du corps de la requête.*/
-        ...thingObject,
+exports.createSauce = (req,res,next) => {/*Création de sauce.*/
+    const sauceObject = JSON.parse(req.body.sauce)
+    delete sauceObject._id
+    const sauce = new Sauce({/*Créer une nouvelle instance de notre modèle sauce en enregistrant les élements du corps de la requête.*/
+        ...sauceObject,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         usersLiked:[],
         usersDisliked:[],
         likes:0,
         dislikes:0
     })
-    thing.save()/*Enregistre notre objet dans la base de données.*/
+    sauce.save()/*Enregistre notre objet dans la base de données.*/
     .then( () => res.status(201).json({ message: 'Objet enregistré !'}))
     .catch( error => res.status(400).json({ error }))
 }
 
-exports.getOneThing = (req,res,next) => { /*Obtenir une sauce par son id.*/
-    Thing.findOne({ _id: req.params.id})
-    .then( thing => res.status(200).json(thing))
+exports.getOneSauce = (req,res,next) => { /*Obtenir une sauce par son id.*/
+    Sauce.findOne({ _id: req.params.id})
+    .then( sauce => res.status(200).json(sauce))
     .catch( error => res.status(404).json({ error }))
 }
 
-exports.modifyThing = (req,res,next) => {/*Modification d'une sauce.*/
-    const thingObject = req.file ?
+exports.modifySauce = (req,res,next) => {/*Modification d'une sauce.*/
+    const sauceObject = req.file ?
     {
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     }:{ ...req.body }
 
     function updateOne(){
-        Thing.updateOne({ _id: req.params.id},{...thingObject, _id: req.params.id})
+        Sauce.updateOne({ _id: req.params.id},{...sauceObject, _id: req.params.id})
             .then( () => res.status(200).json({ message: 'Objet modifié !'}))
             .catch( error => res.status(400).json({ error }))
     }
 
     if (req.file){
-        Thing.findOne({ _id: req.params.id})
-        .then( thing => {
-            const filename = thing.imageUrl.split('/images/')[1]
+        Sauce.findOne({ _id: req.params.id})
+        .then( sauce => {
+            const filename = sauce.imageUrl.split('/images/')[1]
             fs.unlink(`images/${filename}`,() => {
                 updateOne()
             })
@@ -55,17 +55,17 @@ exports.like = (req,res,next) => {/*Gestion des likes de l'utilisateur.*/
     const userlike = req.body.like
     const userId = req.body.userId
     const reqParams = req.params.id
-    Thing.findOne({ _id: reqParams})
-    .then( thing => {
-        const usersLiked = thing.usersLiked
-        const usersDisliked = thing.usersDisliked
+    Sauce.findOne({ _id: reqParams})
+    .then( sauce => {
+        const usersLiked = sauce.usersLiked
+        const usersDisliked = sauce.usersDisliked
         function updateLike(value1){
-            Thing.updateOne({ _id: reqParams},{ ...value1, _id: reqParams})
+            Sauce.updateOne({ _id: reqParams},{ ...value1, _id: reqParams})
             .then(() => res.status(200).json({ message: 'like mis à jour'}))
             .catch( error => res.status(500).json({ error }))
         }
-        function deleteUserId(array,thingFound){
-            const indexUserId = array.indexOf(thingFound)
+        function deleteUserId(array,userIdFound){
+            const indexUserId = array.indexOf(userIdFound)
             array.splice(indexUserId,1)
         }
         if(userlike == 1){
@@ -116,12 +116,12 @@ exports.like = (req,res,next) => {/*Gestion des likes de l'utilisateur.*/
     .catch( error => res.status(500).json({ error }))
 }
    
-exports.deleteThing = (req,res,next) => {/*Suppression de sauce.*/
-    Thing.findOne({ _id: req.params.id})
-    .then( thing => {
-        const filename = thing.imageUrl.split('/images/')[1]
+exports.deleteSauce = (req,res,next) => {/*Suppression de sauce.*/
+    Sauce.findOne({ _id: req.params.id})
+    .then( sauce => {
+        const filename = sauce.imageUrl.split('/images/')[1]
         fs.unlink(`images/${filename}`, () => {
-            Thing.deleteOne({ _id: req.params.id })
+            Sauce.deleteOne({ _id: req.params.id })
             .then( () => res.status(200).json({ message: 'Objet supprimé !'}))
             .catch( error => res.status(400).json({ error }))
         })
@@ -129,8 +129,8 @@ exports.deleteThing = (req,res,next) => {/*Suppression de sauce.*/
     .catch( error => res.status(500).json({ error }))
 }
 
-exports.getAllThings = (req,res,next) => {/*Obtenir toutes les sauces.*/
-    Thing.find()
-    .then( things => res.status(200).json(things))
+exports.getAllSauces = (req,res,next) => {/*Obtenir toutes les sauces.*/
+    Sauce.find()
+    .then( sauces => res.status(200).json(sauces))
     .catch( error => res.status(400).json({ error }))
 }
